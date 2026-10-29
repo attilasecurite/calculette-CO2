@@ -20,6 +20,18 @@
   h1{font-size:clamp(24px,4.5vw,32px);line-height:1.15;letter-spacing:-.02em;margin:0 0 8px;font-weight:700}
   .lede{color:var(--muted);margin:0 0 26px;max-width:60ch;font-size:15px}
 
+  /* Identité agence / année */
+  .identity{display:flex;gap:28px;flex-wrap:wrap;margin:0 0 22px;padding:16px 20px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .id-field{display:flex;flex-direction:column;gap:2px}
+  .id-agence{flex:1 1 320px}
+  .id-annee{flex:0 1 180px}
+  .id-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+  .id-input{border:0;border-bottom:2px solid var(--line-strong);background:transparent;font-family:inherit;color:var(--ink);padding:4px 2px;border-radius:0;font-weight:700;letter-spacing:-.01em}
+  .id-agence .id-input{font-size:26px}
+  .id-annee .id-input{font-size:26px;width:100%}
+  .id-input::placeholder{color:#b7bfc6;font-weight:400}
+  .id-input:focus{outline:0;border-bottom-color:var(--accent)}
+
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 22px 8px;margin-bottom:20px}
   .card.tight{padding-bottom:22px}
   .sec-head{display:flex;align-items:baseline;gap:10px;margin:0 0 4px}
@@ -122,13 +134,49 @@
     .mini{gap:18px}
     .params{flex-wrap:wrap}
   }
+  .print-sources{display:none}
+
+  /* ====== EXPORT 1 PAGE A4 ====== */
   @media print{
-    body{background:#fff}
-    .toggle-line,.actions,details.method>summary .chev{display:none}
-    .card,details.method{box-shadow:none;border-color:#ccc}
-    details.method{page-break-inside:avoid}
-    details.method[open]>summary{pointer-events:none}
-    .adv{display:block!important}
+    @page{ size:A4 portrait; margin:12mm; }
+    html,body{background:#fff}
+    .wrap{max-width:none;padding:0}
+
+    /* on masque la saisie et la méthode : la fiche = identité + résultat + sources */
+    .lede,.sec-note,.toggle-line,.actions,footer.legal,details.method{display:none!important}
+    #fleet .adv{display:none!important}
+
+    /* en-tête compact */
+    .eyebrow{margin:0 0 4px;font-size:10px}
+    h1{font-size:19px;margin:0 0 10px}
+
+    /* identité en bandeau haut */
+    .identity{margin:0 0 12px;padding:10px 14px;border:1px solid #ccc;border-left:4px solid var(--accent);box-shadow:none;gap:24px}
+    .id-label{font-size:10px}
+    .id-agence .id-input,.id-annee .id-input{font-size:20px}
+
+    /* le parc reste visible (compo flotte) mais compact */
+    .card{box-shadow:none;border-color:#ccc;padding:12px 14px 10px;margin-bottom:12px;break-inside:avoid}
+    .sec-head{margin-bottom:8px}
+    .sec-title{font-size:14px}
+    .fleet-row{padding:7px 0}
+    .veh-name{font-size:13px}.veh-hint{font-size:11px}
+    .single input,.split .mot input{border-color:#ccc}
+    .split .mot input,.single input{padding:4px 6px;font-size:13px}
+    .params{padding:8px 12px;margin-bottom:10px;background:#fff;border-color:#ccc}
+
+    /* résultat */
+    .result-top{gap:20px;margin-bottom:12px}
+    .headline .value{font-size:40px}
+    .headline .unit{font-size:14px}
+    .mini .k{font-size:18px}
+    table.detail{font-size:12px}
+    table.detail th,table.detail td{padding:5px 6px}
+    .bar{margin:4px 0 10px}
+
+    .print-sources{display:block;font-size:9.5px;line-height:1.45;color:#555;margin:12px 0 0;border-top:1px solid #ddd;padding-top:8px}
+
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   }
 </style>
 </head>
@@ -138,6 +186,18 @@
   <p class="eyebrow">Portail QHSE · Réseau Attila</p>
   <h1>Empreinte carbone du parc véhicules</h1>
   <p class="lede">Estimez les émissions annuelles de CO₂ d'une agence à partir du nombre de véhicules et de leur motorisation. Méthode fondée sur l'énergie réellement consommée (carburant ou électricité) et les facteurs d'émission ADEME (Base Carbone®) — vérifiable et compatible avec une démarche EcoVadis / bilan GES.</p>
+
+  <!-- IDENTITÉ (fiche / export) -->
+  <div class="identity">
+    <div class="id-field id-agence">
+      <span class="id-label">Agence</span>
+      <input type="text" id="agence" class="id-input" placeholder="Nom de l'agence" autocomplete="off">
+    </div>
+    <div class="id-field id-annee">
+      <span class="id-label">Année</span>
+      <input type="text" id="annee" class="id-input" placeholder="2026" autocomplete="off">
+    </div>
+  </div>
 
   <!-- 1. PARC -->
   <section class="card">
@@ -192,6 +252,8 @@
         <tr><td>Total parc</td><td id="fVeh">0</td><td id="fKm">0</td><td id="fEnergy">0</td><td id="fTon">0,00</td><td>100 %</td></tr>
       </tfoot>
     </table>
+
+    <p class="print-sources">Méthode : Émissions = énergie consommée × facteur d'émission ADEME (Base Carbone®). Facteurs retenus — gazole B7 3,10 · essence 2,70 · hybride 2,70 kg CO₂e/L ; électricité France 0,0519 kg CO₂e/kWh (à l'usage, hors fabrication véhicule/batterie). Hypothèse : 1 intervention/jour pour les véhicules de chantier, voiture de fonction au forfait km/jour, base jours travaillés/an ajustable. Estimation indicative — ne se substitue pas à un bilan GES réglementaire.</p>
   </section>
 
   <!-- METHODE -->
@@ -445,6 +507,9 @@ Total = Σ des catégories ÷ 1 000  →  tonnes CO₂e/an</div>
     if(e.target.matches('select[data-k="motor"]')) onMotorChange(e.target.dataset.v);
   });
   advBtn.addEventListener("click", function(){ setAdv(advBtn.getAttribute("aria-pressed")!=="true"); });
+
+  // année par défaut = année en cours (modifiable)
+  (function(){ var a=byId("annee"); if(a && !a.value) a.value = String(new Date().getFullYear()); })();
 
   byId("resetBtn").addEventListener("click", function(){
     byId("jours").value = JOURS_DEF;
