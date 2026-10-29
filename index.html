@@ -32,26 +32,40 @@
   .params label{font-size:12px;color:var(--muted);font-weight:600}
   .params .p-note{font-size:12px;color:var(--muted);align-self:center}
 
-  .fleet-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+  .fleet-row{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:flex-end;padding:16px 0;border-bottom:1px solid var(--line)}
   .fleet-row:last-of-type{border-bottom:0}
+  .veh-head{align-self:center}
   .veh-name{font-weight:600;font-size:15px}
   .veh-hint{color:var(--muted);font-size:12.5px;margin-top:1px}
-  .qty-wrap{display:flex;align-items:center;gap:8px}
-  .qty-wrap label{font-size:12px;color:var(--muted)}
-  input[type="number"]{width:88px;padding:9px 10px;font-size:15px;font-variant-numeric:tabular-nums;border:1px solid var(--line-strong);border-radius:8px;background:#fff;color:var(--ink);text-align:right;font-family:inherit}
+
+  input[type="number"]{padding:9px 10px;font-size:15px;font-variant-numeric:tabular-nums;border:1px solid var(--line-strong);border-radius:8px;background:#fff;color:var(--ink);text-align:right;font-family:inherit}
   input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
-  .adv{display:none;grid-column:1/-1;margin-top:12px;padding-top:14px;border-top:1px dashed var(--line-strong)}
+  .ctrl{display:flex;flex-direction:column;gap:4px}
+  .ctrl label{font-size:12px;color:var(--muted);font-weight:600}
+  .ctrl select{padding:9px 10px;font-size:14px;border:1px solid var(--line-strong);border-radius:8px;background:#fff;font-family:inherit;color:var(--ink);min-width:128px}
+  .single{display:flex;gap:12px;align-items:flex-end}
+  .single input{width:76px}
+
+  /* répartition par motorisation */
+  .split{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .split .mot{display:flex;flex-direction:column;gap:3px;align-items:center}
+  .split .mot label{font-size:11px;color:var(--muted);font-weight:600}
+  .split .mot input{width:58px;text-align:center}
+  .split .mot[data-m="electrique"] label{color:#0a7d55}
+  .split-label{font-size:12px;color:var(--muted);font-weight:600;width:100%;text-align:right;margin-bottom:2px}
+
+  .adv{display:none;grid-column:1/-1;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line-strong)}
   .adv.show{display:block}
   .adv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
   .field{display:flex;flex-direction:column;gap:4px}
   .field label{font-size:12px;color:var(--muted);font-weight:600}
-  .field input,.field select{width:100%;text-align:left}
-  .field select{padding:9px 10px;font-size:14px;border:1px solid var(--line-strong);border-radius:8px;background:#fff;font-family:inherit;color:var(--ink)}
+  .field input{width:100%;text-align:left}
+  .adv-sub{font-size:12px;font-weight:700;color:var(--ink);margin:4px 0 2px;width:100%}
   .km-readout{font-size:12.5px;color:var(--muted);margin-top:10px;font-variant-numeric:tabular-nums}
   .km-readout strong{color:var(--ink)}
 
-  .toggle-line{display:flex;justify-content:flex-end;margin-top:6px}
+  .toggle-line{display:flex;justify-content:flex-end;margin-top:10px}
   .toggle{appearance:none;border:1px solid var(--line-strong);background:#fff;color:var(--ink);font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;font-family:inherit}
   .toggle[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
 
@@ -76,6 +90,8 @@
   .dot{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
   table.detail tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--line-strong);font-variant-numeric:tabular-nums}
   table.detail td:not(:first-child){font-variant-numeric:tabular-nums}
+  .tag{font-size:11px;font-weight:600;color:var(--muted);background:#eef0f2;border-radius:5px;padding:1px 6px;margin-left:2px;letter-spacing:.02em}
+  tr.empty td{color:var(--muted);font-weight:400;text-align:center;font-style:italic}
 
   details.method{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden}
   details.method>summary{list-style:none;cursor:pointer;padding:18px 22px;font-weight:700;font-size:15px;display:flex;justify-content:space-between;align-items:center}
@@ -102,7 +118,7 @@
 
   @media (max-width:560px){
     .fleet-row{grid-template-columns:1fr}
-    .qty-wrap{justify-content:flex-start}
+    .single,.split{justify-content:flex-start}
     .mini{gap:18px}
     .params{flex-wrap:wrap}
   }
@@ -121,19 +137,19 @@
 
   <p class="eyebrow">Portail QHSE · Réseau Attila</p>
   <h1>Empreinte carbone du parc véhicules</h1>
-  <p class="lede">Estimez les émissions annuelles de CO₂ d'une agence à partir du nombre de véhicules. Méthode fondée sur la consommation réelle de carburant et les facteurs d'émission ADEME (Base Carbone®) — vérifiable et compatible avec une démarche EcoVadis / bilan GES.</p>
+  <p class="lede">Estimez les émissions annuelles de CO₂ d'une agence à partir du nombre de véhicules et de leur motorisation. Méthode fondée sur l'énergie réellement consommée (carburant ou électricité) et les facteurs d'émission ADEME (Base Carbone®) — vérifiable et compatible avec une démarche EcoVadis / bilan GES.</p>
 
   <!-- 1. PARC -->
   <section class="card">
     <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Votre parc</h2></div>
-    <p class="sec-note">Indiquez le nombre de véhicules par catégorie. Le kilométrage annuel est estimé à partir de l'activité de proximité : 1 intervention/jour pour les véhicules de chantier, 50 km/jour pour la voiture de fonction.</p>
+    <p class="sec-note">Indiquez le nombre de véhicules et leur motorisation. L'utilitaire et la voiture de fonction se répartissent par motorisation (ex. 1 essence + 1 électrique). Le kilométrage est estimé sur l'activité de proximité : 1 intervention/jour pour le chantier, 50 km/jour pour la voiture de fonction.</p>
 
     <div class="params">
       <div class="field">
         <label for="jours">Jours travaillés / an</label>
-        <input type="number" id="jours" min="0" step="1" value="330" style="width:96px;text-align:right">
+        <input type="number" id="jours" min="0" step="1" value="250" style="width:96px;text-align:right">
       </div>
-      <span class="p-note">Base : 330 jours (1 mois de fermeture). Ajustable.</span>
+      <span class="p-note">Base : 250 jours (5 j/7, 2 semaines de fermeture l'été). Ajustable.</span>
     </div>
 
     <div id="fleet"></div>
@@ -155,7 +171,8 @@
         <span class="caption" id="totalKg">0 kg CO₂e / an</span>
       </div>
       <div class="mini">
-        <div><div class="k" id="totalLitres">0</div><div class="l">litres de carburant / an</div></div>
+        <div id="miniLitres"><div class="k" id="totalLitres">0</div><div class="l">litres carburant / an</div></div>
+        <div id="miniKwh" style="display:none"><div class="k" id="totalKwh">0</div><div class="l">kWh électrique / an</div></div>
         <div><div class="k" id="perVeh">0</div><div class="l">kg CO₂e / véhicule / an</div></div>
       </div>
     </div>
@@ -168,11 +185,11 @@
 
     <table class="detail">
       <thead>
-        <tr><th>Catégorie</th><th>Véhicules</th><th>Km / an</th><th>Litres / an</th><th>t CO₂e / an</th><th>Part</th></tr>
+        <tr><th>Catégorie</th><th>Véhicules</th><th>Km / an</th><th>Énergie / an</th><th>t CO₂e / an</th><th>Part</th></tr>
       </thead>
       <tbody id="detailBody"></tbody>
       <tfoot>
-        <tr><td>Total parc</td><td id="fVeh">0</td><td id="fKm">0</td><td id="fLit">0</td><td id="fTon">0,00</td><td>100 %</td></tr>
+        <tr><td>Total parc</td><td id="fVeh">0</td><td id="fKm">0</td><td id="fEnergy">0</td><td id="fTon">0,00</td><td>100 %</td></tr>
       </tfoot>
     </table>
   </section>
@@ -181,37 +198,45 @@
   <details class="method">
     <summary>Méthode de calcul &amp; sources <span class="chev">▾</span></summary>
     <div class="method-body">
-      <h3>Formule</h3>
+      <h3>Kilométrage annuel</h3>
       <div class="formula">Véhicule de chantier :
   Km/an = Interventions/jour × Jours travaillés/an × Km moyen/intervention
 
 Véhicule de fonction :
-  Km/an = Km/jour × Jours travaillés/an
+  Km/an = Km/jour × Jours travaillés/an</div>
 
-Puis, pour chaque catégorie :
-  Litres/an  = Nb véhicules × Km/an × (Conso L/100 km ÷ 100)
+      <h3>Émissions, selon la motorisation</h3>
+      <div class="formula">Thermique (gazole, essence, hybride) :
+  Litres/an = Nb véhicules × Km/an × (Conso L/100 km ÷ 100)
   kg CO₂e/an = Litres/an × Facteur d'émission du carburant
-  Total      = Σ ÷ 1 000  →  tonnes CO₂e/an</div>
-      <p class="src" style="margin-top:10px">Principe standard des bilans GES : <em>Émissions = Donnée d'activité × Facteur d'émission</em>.</p>
 
-      <h3>Facteurs d'émission retenus (kg CO₂e / litre)</h3>
+Électrique :
+  kWh/an = Nb véhicules × Km/an × (Conso kWh/100 km ÷ 100)
+  kg CO₂e/an = kWh/an × Facteur d'émission de l'électricité
+
+Total = Σ des catégories ÷ 1 000  →  tonnes CO₂e/an</div>
+      <p class="src" style="margin-top:10px">Logique unique : <em>Émissions = Donnée d'activité (énergie consommée) × Facteur d'émission</em>.</p>
+
+      <h3>Facteurs d'émission retenus</h3>
       <ul class="clean">
-        <li><strong>Gazole routier B7</strong> — <strong>3,10</strong> (combustion + amont). ADEME Base Carbone® v24 (2025). Combustion seule ≈ 3,07 (guide MEDDE/ADEME).</li>
-        <li><strong>Essence SP95 / SP98</strong> — <strong>2,70</strong> (combustion + amont). ADEME Base Carbone®.</li>
+        <li><strong>Gazole routier B7</strong> — <strong>3,10</strong> kg CO₂e/L (combustion + amont). ADEME Base Carbone® v24 (2025).</li>
+        <li><strong>Essence SP95 / SP98</strong> — <strong>2,70</strong> kg CO₂e/L (combustion + amont). ADEME Base Carbone®.</li>
+        <li><strong>Hybride</strong> — facteur essence (<strong>2,70</strong> kg CO₂e/L) appliqué à une consommation réduite. L'hybride non rechargeable n'a pas de facteur propre : le gain est porté par le L/100 km.</li>
+        <li><strong>Électricité (France)</strong> — <strong>0,0519</strong> kg CO₂e/kWh (mix moyen consommation France continentale, usage). ADEME Base Carbone® v23.9. Hors fabrication de la batterie.</li>
       </ul>
-      <p class="src">Base Carbone® / Base Empreinte® ADEME : <a href="https://base-empreinte.ademe.fr/" target="_blank" rel="noopener">base-empreinte.ademe.fr</a></p>
+      <p class="src">Base Carbone® / Base Empreinte® ADEME : <a href="https://base-empreinte.ademe.fr/" target="_blank" rel="noopener">base-empreinte.ademe.fr</a> — périmètre « à l'usage » (carburant du puits à la roue / mix de consommation électrique), hors fabrication du véhicule.</p>
 
       <h3>Hypothèses par défaut</h3>
-      <p class="src" style="margin:0 0 8px">Base : <strong>330 jours travaillés/an</strong> (1 mois de fermeture).</p>
+      <p class="src" style="margin:0 0 8px">Base : <strong>250 jours travaillés/an</strong> (5 j/7, moins 2 semaines l'été). Consommations par défaut selon la motorisation :</p>
       <ul class="clean">
-        <li><strong>Camion nacelle</strong> : 1 intervention/jour × 30 km/intervention → ≈ 9 900 km/an · 24 L/100 km · gazole</li>
-        <li><strong>Utilitaire (VUL)</strong> : 1 intervention/jour × 30 km/intervention → ≈ 9 900 km/an · 10 L/100 km · gazole</li>
-        <li><strong>Voiture de fonction</strong> : 50 km/jour → ≈ 16 500 km/an · 6 L/100 km · gazole</li>
+        <li><strong>Camion nacelle</strong> : 1 interv/jour × 30 km → ≈ 7 500 km/an — gazole 24 · essence 26 · hybride 20 L/100 km · électrique 90 kWh/100 km</li>
+        <li><strong>Utilitaire (VUL)</strong> : 1 interv/jour × 30 km → ≈ 7 500 km/an — gazole 10 · essence 11 · hybride 8 L/100 km · électrique 28 kWh/100 km</li>
+        <li><strong>Voiture de fonction</strong> : 50 km/jour → ≈ 12 500 km/an — gazole 6 · essence 6,5 · hybride 4,5 L/100 km · électrique 18 kWh/100 km</li>
       </ul>
-      <p class="src">Ces valeurs sont des <strong>estimations moyennes</strong>, pas des mesures : interventions/jour, km moyen et jours travaillés dépendent de l'agence.</p>
+      <p class="src">Estimations moyennes, pas des mesures : consommation, interventions/jour, km moyen et jours travaillés dépendent de l'agence.</p>
 
       <div class="disclaimer">
-        <strong>Pour un chiffre auditable (EcoVadis / bilan GES) :</strong> remplacez ces hypothèses par les données réelles (relevés carte carburant, factures, télématique). Le calcul le plus fiable part des <strong>litres réellement consommés</strong> — ajustez alors la consommation pour retrouver le volume facturé.
+        <strong>Pour un chiffre auditable (EcoVadis / bilan GES) :</strong> remplacez ces hypothèses par les données réelles (relevés carte carburant/badge de recharge, factures, télématique). Le calcul le plus fiable part des <strong>litres ou kWh réellement consommés</strong>.
       </div>
     </div>
   </details>
@@ -232,13 +257,24 @@ Puis, pour chaque catégorie :
 (function(){
   "use strict";
 
-  var FE = { gazole: 3.10, essence: 2.70 }; // kg CO2e / L (combustion + amont), ADEME Base Carbone
-  var JOURS_DEF = 330;
+  var FE = { gazole:3.10, essence:2.70, hybride:2.70, electrique:0.0519 };
+  var MOTORS = ["gazole","essence","hybride","electrique"];
+  var MOTOR_LABEL = { gazole:"Gazole", essence:"Essence", hybride:"Hybride", electrique:"Électrique" };
+  var MOTOR_SHORT = { gazole:"Gazole", essence:"Essence", hybride:"Hybride", electrique:"Élec" };
+  var JOURS_DEF = 250;
 
+  // Conso par défaut : [véhicule][motorisation]  (L/100km, ou kWh/100km pour électrique)
+  var CONSO = {
+    nacelle:    { gazole:24, essence:26,  hybride:20, electrique:90 },
+    utilitaire: { gazole:10, essence:11,  hybride:8,  electrique:28 },
+    voiture:    { gazole:6,  essence:6.5, hybride:4.5,electrique:18 }
+  };
+
+  // mode "single" : une motorisation + un nombre | mode "split" : un nombre par motorisation
   var VEHICLES = [
-    { id:"nacelle",    label:"Camion nacelle",     hint:"Nacelle sur porteur / PL",     dot:"var(--accent)", profile:"chantier", conso:24, carburant:"gazole", interv:1, kmint:30 },
-    { id:"utilitaire", label:"Utilitaire (VUL)",    hint:"Fourgon type Master, Trafic…", dot:"var(--slate)",  profile:"chantier", conso:10, carburant:"gazole", interv:1, kmint:30 },
-    { id:"voiture",    label:"Voiture de fonction", hint:"Véhicule particulier",         dot:"var(--grey)",   profile:"roulage",  conso:6,  carburant:"gazole", kmjour:50 }
+    { id:"nacelle",    label:"Camion nacelle",     hint:"Nacelle sur porteur / PL",     dot:"var(--accent)", seg:"seg-nacelle",    profile:"chantier", mode:"single", motor:"gazole", interv:1, kmint:30 },
+    { id:"utilitaire", label:"Utilitaire (VUL)",    hint:"Fourgon type Master, Trafic…", dot:"var(--slate)",  seg:"seg-utilitaire", profile:"chantier", mode:"split",   interv:1, kmint:30 },
+    { id:"voiture",    label:"Voiture de fonction", hint:"Véhicule particulier",         dot:"var(--grey)",   seg:"seg-voiture",    profile:"roulage",  mode:"split",   kmjour:50 }
   ];
   var DEFAULTS = JSON.parse(JSON.stringify(VEHICLES));
 
@@ -246,8 +282,34 @@ Puis, pour chaque catégorie :
   var detailBody = document.getElementById("detailBody");
   var advBtn     = document.getElementById("advToggle");
 
+  function isElec(m){ return m === "electrique"; }
+  function consoUnit(m){ return isElec(m) ? "kWh/100 km" : "L/100 km"; }
+  function energyUnit(m){ return isElec(m) ? "kWh" : "L"; }
+
   VEHICLES.forEach(function(v){
-    var params = (v.profile === "chantier")
+    // --- bloc de saisie principal (nombre + motorisation) ---
+    var controls;
+    if(v.mode === "single"){
+      var motorOpts = MOTORS.map(function(m){
+        return '<option value="'+m+'"'+(v.motor===m?" selected":"")+'>'+MOTOR_LABEL[m]+'</option>';
+      }).join("");
+      controls =
+        '<div class="single">'+
+          '<div class="ctrl"><label for="motor-'+v.id+'">Motorisation</label>'+
+            '<select id="motor-'+v.id+'" data-k="motor" data-v="'+v.id+'">'+motorOpts+'</select></div>'+
+          '<div class="ctrl"><label for="qty-'+v.id+'">Nombre</label>'+
+            '<input type="number" min="0" step="1" value="0" id="qty-'+v.id+'" data-k="qty" data-v="'+v.id+'"></div>'+
+        '</div>';
+    } else {
+      var mots = MOTORS.map(function(m){
+        return '<div class="mot" data-m="'+m+'"><label for="qty-'+v.id+'-'+m+'">'+MOTOR_SHORT[m]+'</label>'+
+          '<input type="number" min="0" step="1" value="0" id="qty-'+v.id+'-'+m+'" data-k="qtym" data-v="'+v.id+'"></div>';
+      }).join("");
+      controls = '<div class="split"><span class="split-label">Nombre par motorisation</span>'+mots+'</div>';
+    }
+
+    // --- hypothèses dépliables (activité + conso) ---
+    var activity = (v.profile === "chantier")
       ? '<div class="field"><label for="interv-'+v.id+'">Interventions / jour</label>'+
           '<input type="number" min="0" step="0.5" value="'+v.interv+'" id="interv-'+v.id+'" data-k="interv" data-v="'+v.id+'"></div>'+
         '<div class="field"><label for="kmint-'+v.id+'">Km moyen / intervention (A/R)</label>'+
@@ -255,23 +317,25 @@ Puis, pour chaque catégorie :
       : '<div class="field"><label for="kmjour-'+v.id+'">Km / jour</label>'+
           '<input type="number" min="0" step="5" value="'+v.kmjour+'" id="kmjour-'+v.id+'" data-k="kmjour" data-v="'+v.id+'"></div>';
 
+    var consoFields;
+    if(v.mode === "single"){
+      consoFields =
+        '<div class="field"><label id="consoLabel-'+v.id+'" for="conso-'+v.id+'">Conso ('+consoUnit(v.motor)+')</label>'+
+          '<input type="number" min="0" step="0.5" value="'+CONSO[v.id][v.motor]+'" id="conso-'+v.id+'" data-k="conso" data-v="'+v.id+'"></div>';
+    } else {
+      consoFields = '<div class="adv-sub">Consommation par motorisation</div>' + MOTORS.map(function(m){
+        return '<div class="field"><label for="conso-'+v.id+'-'+m+'">'+MOTOR_LABEL[m]+' ('+consoUnit(m)+')</label>'+
+          '<input type="number" min="0" step="0.5" value="'+CONSO[v.id][m]+'" id="conso-'+v.id+'-'+m+'" data-k="consom" data-v="'+v.id+'"></div>';
+      }).join("");
+    }
+
     var row = document.createElement("div");
     row.className = "fleet-row";
     row.innerHTML =
-      '<div><div class="veh-name">'+v.label+'</div><div class="veh-hint">'+v.hint+'</div></div>'+
-      '<div class="qty-wrap"><label for="qty-'+v.id+'">Nombre</label>'+
-        '<input type="number" min="0" step="1" value="0" id="qty-'+v.id+'" data-k="qty" data-v="'+v.id+'"></div>'+
+      '<div class="veh-head"><div class="veh-name">'+v.label+'</div><div class="veh-hint">'+v.hint+'</div></div>'+
+      controls+
       '<div class="adv" id="adv-'+v.id+'">'+
-        '<div class="adv-grid">'+
-          params+
-          '<div class="field"><label for="conso-'+v.id+'">Conso (L/100 km)</label>'+
-            '<input type="number" min="0" step="0.5" value="'+v.conso+'" id="conso-'+v.id+'" data-k="conso" data-v="'+v.id+'"></div>'+
-          '<div class="field"><label for="carb-'+v.id+'">Carburant</label>'+
-            '<select id="carb-'+v.id+'" data-k="carburant" data-v="'+v.id+'">'+
-              '<option value="gazole"'+(v.carburant==="gazole"?" selected":"")+'>Gazole (B7)</option>'+
-              '<option value="essence"'+(v.carburant==="essence"?" selected":"")+'>Essence (SP95/98)</option>'+
-            '</select></div>'+
-        '</div>'+
+        '<div class="adv-grid">'+ activity + consoFields +'</div>'+
         '<div class="km-readout" id="kmout-'+v.id+'"></div>'+
       '</div>';
     fleetEl.appendChild(row);
@@ -287,44 +351,86 @@ Puis, pour chaque catégorie :
     return num("kmjour-"+v.id) * jours;
   }
 
+  // renvoie les lignes [{motor, qty, conso, energy, kg}] d'une catégorie
+  function linesFor(v, kmVeh){
+    var out = [];
+    if(v.mode === "single"){
+      var m = byId("motor-"+v.id).value, qty = num("qty-"+v.id), conso = num("conso-"+v.id);
+      if(qty>0){ var e=qty*kmVeh*(conso/100); out.push({motor:m,qty:qty,energy:e,kg:e*FE[m]}); }
+    } else {
+      MOTORS.forEach(function(m){
+        var qty = num("qty-"+v.id+"-"+m);
+        if(qty>0){ var conso=num("conso-"+v.id+"-"+m); var e=qty*kmVeh*(conso/100); out.push({motor:m,qty:qty,energy:e,kg:e*FE[m]}); }
+      });
+    }
+    return out;
+  }
+
+  function onMotorChange(vid){
+    var m = byId("motor-"+vid).value;
+    byId("conso-"+vid).value = CONSO[vid][m];
+    byId("consoLabel-"+vid).textContent = "Conso ("+consoUnit(m)+")";
+    compute();
+  }
+
   function compute(){
-    var rows=[], totalKg=0, totalLit=0, totalVeh=0, totalKm=0;
+    var totalKg=0, totalLit=0, totalKwh=0, totalVeh=0, totalKm=0;
+    var catKg = {}, detailRows = [];
 
     VEHICLES.forEach(function(v){
-      var qty=num("qty-"+v.id), kmVeh=kmFor(v), conso=num("conso-"+v.id), carb=byId("carb-"+v.id).value;
-      var litres = qty * kmVeh * (conso/100);
-      var kg = litres * (FE[carb]||FE.gazole);
-      rows.push({ v:v, qty:qty, kmVeh:kmVeh, kmTot:qty*kmVeh, litres:litres, kg:kg });
-      totalKg+=kg; totalLit+=litres; totalVeh+=qty; totalKm+=qty*kmVeh;
-      var out=byId("kmout-"+v.id);
-      if(out) out.innerHTML = "≈ <strong>"+fr(Math.round(kmVeh))+" km/an</strong> par véhicule";
+      var kmVeh = kmFor(v);
+      var lines = linesFor(v, kmVeh);
+      var catTotKg = 0, catVeh = 0;
+
+      lines.forEach(function(ln){
+        catTotKg += ln.kg; catVeh += ln.qty;
+        totalKg += ln.kg; totalVeh += ln.qty; totalKm += ln.qty*kmVeh;
+        if(isElec(ln.motor)) totalKwh += ln.energy; else totalLit += ln.energy;
+        detailRows.push({ v:v, motor:ln.motor, qty:ln.qty, kmTot:ln.qty*kmVeh, energy:ln.energy, kg:ln.kg });
+      });
+      catKg[v.id] = catTotKg;
+
+      var out = byId("kmout-"+v.id);
+      if(out) out.innerHTML = "≈ <strong>"+fr(Math.round(kmVeh))+" km/an</strong> par véhicule"+(catVeh>0?" · "+fr(catVeh)+" véhicule(s)":"");
     });
 
     byId("totalTons").textContent = fr(totalKg/1000, 2);
     byId("totalKg").textContent   = fr(Math.round(totalKg)) + " kg CO₂e / an";
     byId("totalLitres").textContent = fr(Math.round(totalLit));
+    byId("totalKwh").textContent    = fr(Math.round(totalKwh));
+    byId("miniKwh").style.display   = totalKwh>0 ? "" : "none";
     byId("perVeh").textContent = totalVeh>0 ? fr(Math.round(totalKg/totalVeh)) : "0";
 
+    // barre : 3 segments par catégorie
     var barSpans = document.querySelectorAll("#bar span");
-    rows.forEach(function(r,i){ barSpans[i].style.width = (totalKg>0 ? (r.kg/totalKg*100) : 0) + "%"; });
+    VEHICLES.forEach(function(v,i){ barSpans[i].style.width = (totalKg>0 ? (catKg[v.id]/totalKg*100) : 0) + "%"; });
 
+    // tableau détaillé : une ligne par (catégorie × motorisation) saisie
     detailBody.innerHTML = "";
-    rows.forEach(function(r){
-      var pct = totalKg>0 ? (r.kg/totalKg*100) : 0;
-      var tr=document.createElement("tr");
-      tr.innerHTML =
-        '<td class="name"><span class="dot" style="background:'+r.v.dot+'"></span>'+r.v.label+'</td>'+
-        '<td>'+fr(r.qty)+'</td>'+
-        '<td>'+fr(Math.round(r.kmTot))+'</td>'+
-        '<td>'+fr(Math.round(r.litres))+'</td>'+
-        '<td>'+fr(r.kg/1000,2)+'</td>'+
-        '<td>'+fr(pct)+' %</td>';
-      detailBody.appendChild(tr);
-    });
+    if(detailRows.length === 0){
+      detailBody.innerHTML = '<tr class="empty"><td colspan="6">Saisissez le nombre de véhicules pour voir le détail.</td></tr>';
+    } else {
+      detailRows.forEach(function(r){
+        var pct = totalKg>0 ? (r.kg/totalKg*100) : 0;
+        var tr=document.createElement("tr");
+        tr.innerHTML =
+          '<td class="name"><span class="dot" style="background:'+r.v.dot+'"></span>'+r.v.label+
+            ' <span class="tag">'+MOTOR_LABEL[r.motor]+'</span></td>'+
+          '<td>'+fr(r.qty)+'</td>'+
+          '<td>'+fr(Math.round(r.kmTot))+'</td>'+
+          '<td>'+fr(Math.round(r.energy))+' '+energyUnit(r.motor)+'</td>'+
+          '<td>'+fr(r.kg/1000,2)+'</td>'+
+          '<td>'+fr(pct)+' %</td>';
+        detailBody.appendChild(tr);
+      });
+    }
 
+    var parts=[];
+    if(totalLit>0) parts.push(fr(Math.round(totalLit))+" L");
+    if(totalKwh>0) parts.push(fr(Math.round(totalKwh))+" kWh");
     byId("fVeh").textContent=fr(totalVeh);
     byId("fKm").textContent =fr(Math.round(totalKm));
-    byId("fLit").textContent=fr(Math.round(totalLit));
+    byId("fEnergy").textContent = parts.length ? parts.join(" · ") : "0";
     byId("fTon").textContent=fr(totalKg/1000,2);
   }
 
@@ -334,16 +440,26 @@ Puis, pour chaque catégorie :
     document.querySelectorAll(".adv").forEach(function(el){ el.classList.toggle("show", open); });
   }
 
-  document.addEventListener("input", function(e){ if(e.target.matches('input[data-k],select[data-k],#jours')) compute(); });
-  document.addEventListener("change", function(e){ if(e.target.matches('select[data-k]')) compute(); });
+  document.addEventListener("input", function(e){ if(e.target.matches('input[data-k],#jours')) compute(); });
+  document.addEventListener("change", function(e){
+    if(e.target.matches('select[data-k="motor"]')) onMotorChange(e.target.dataset.v);
+  });
   advBtn.addEventListener("click", function(){ setAdv(advBtn.getAttribute("aria-pressed")!=="true"); });
 
   byId("resetBtn").addEventListener("click", function(){
     byId("jours").value = JOURS_DEF;
     DEFAULTS.forEach(function(v){
-      byId("qty-"+v.id).value = 0;
-      byId("conso-"+v.id).value = v.conso;
-      byId("carb-"+v.id).value = v.carburant;
+      if(v.mode==="single"){
+        byId("motor-"+v.id).value = v.motor;
+        byId("qty-"+v.id).value = 0;
+        byId("conso-"+v.id).value = CONSO[v.id][v.motor];
+        byId("consoLabel-"+v.id).textContent = "Conso ("+consoUnit(v.motor)+")";
+      } else {
+        MOTORS.forEach(function(m){
+          byId("qty-"+v.id+"-"+m).value = 0;
+          byId("conso-"+v.id+"-"+m).value = CONSO[v.id][m];
+        });
+      }
       if(v.profile==="chantier"){ byId("interv-"+v.id).value=v.interv; byId("kmint-"+v.id).value=v.kmint; }
       else { byId("kmjour-"+v.id).value=v.kmjour; }
     });
